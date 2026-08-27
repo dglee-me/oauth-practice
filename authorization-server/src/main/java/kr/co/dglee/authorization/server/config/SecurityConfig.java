@@ -2,6 +2,7 @@ package kr.co.dglee.authorization.server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -24,18 +25,27 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         UserDetails user = User.builder()
                 .username("user")
-                .password(passwordEncoder.encode("password"))
+                .password(passwordEncoder.encode("user"))
                 .roles("USER")
                 .build();
 
-        return new InMemoryUserDetailsManager(user);
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password(passwordEncoder.encode("admin"))
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(user, admin);
     }
 
+    @Order(2)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         return http
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().authenticated())
+                        .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
                 .formLogin(Customizer.withDefaults())
                 .build();
     }
