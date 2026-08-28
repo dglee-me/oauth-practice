@@ -2,5 +2,14 @@ spring:
   application:
     name: authorization-server
 
+  security:
+    oauth2:
+      authorizationserver:
+        issuer: http://localhost:8080
+
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        name: JSESSIONAUTHID

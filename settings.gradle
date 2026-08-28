@@ -1,3 +1,4 @@
 rootProject.name = 'oauth-practice'
 
 include 'authorization-server'
+include 'board-client'
